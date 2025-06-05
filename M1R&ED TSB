@@ -1,22 +1,18 @@
 -- Open source (Disconnected)
--- 🛠️ Services
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 local camera = game.Workspace.CurrentCamera
 local player = game.Players.LocalPlayer
 
--- 🔄 การหมุนตัวละคร
 local rotationEnabled = false
 local isPerformingAction = false
 
--- 🖥️ UI Setup
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CustomUI"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game:GetService("CoreGui")
 
--- 🟢 ฟังก์ชันสร้างปุ่ม UI (เพิ่มประสิทธิภาพการสร้างปุ่ม)
 local function createButton(name, posY)
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(0, 130, 0, 40)
@@ -54,14 +50,12 @@ local function createButton(name, posY)
     return button
 end
 
--- 📌 Main UI Container
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 200, 0, 120)
 mainFrame.Position = UDim2.new(0, 10, 0, 10)
 mainFrame.BackgroundTransparency = 1
 mainFrame.Parent = screenGui
 
--- 📌 สร้างปุ่ม (สร้าง UI ครั้งเดียว)
 local resetButton = createButton("M1 Reset", 0)
 local emoteDashButton = createButton("Emote Dash", 45)
 local toggleRotationButton = createButton("Rotation: OFF", 90)
@@ -70,17 +64,14 @@ resetButton.Parent = mainFrame
 emoteDashButton.Parent = mainFrame
 toggleRotationButton.Parent = mainFrame
 
--- 🎥 แคชแอนิเมชัน
 local animationCache = {}
 
--- ฟังก์ชันตรวจสอบตัวละครของผู้เล่น
 local function getCharacter()
     local character = player.Character
     local humanoid = character and character:FindFirstChildOfClass("Humanoid")
     return character, humanoid
 end
 
--- ฟังก์ชันเล่นแอนิเมชัน
 local function playAnimation(animationId)
     local _, humanoid = getCharacter()
     if not humanoid then return end
@@ -106,7 +97,6 @@ local function playAnimation(animationId)
     return animTrack
 end
 
--- ฟังก์ชันการหมุนตัวละคร
 local function rotateCharacter(degrees)
 	if isPerformingAction or not rotationEnabled then return end
 	isPerformingAction = true
@@ -114,31 +104,25 @@ local function rotateCharacter(degrees)
 	local character, _ = getCharacter()
 	local rootPart = character and character:FindFirstChild("HumanoidRootPart")
 	if rootPart then
-		-- หมุนตัวละครตามแกน Y (แนวนอน)
-		rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(degrees), 0)
+		rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(degrees),
 
-		-- ข้อมูลกล้องปัจจุบัน
 		local camPos = camera.CFrame.Position
 		local camY = camPos.Y -- ความสูงเดิมของกล้อง
 		local distanceVec = camPos - rootPart.Position
 		local flatVec = Vector3.new(distanceVec.X, 0, distanceVec.Z)
 		local distance = flatVec.Magnitude
 
-		-- หมุนเวกเตอร์ในแนวราบ (แกน Y)
 		local rotatedVec = CFrame.fromAxisAngle(Vector3.yAxis, math.rad(degrees)) * flatVec
 
-		-- ตำแหน่งใหม่ของกล้อง (คงความสูงเดิม)
 		local newCamPos = rootPart.Position + rotatedVec
 		newCamPos = Vector3.new(newCamPos.X, camY, newCamPos.Z)
 
-		-- ตั้ง CFrame ใหม่ให้กล้องมองที่ตัวละคร
 		camera.CFrame = CFrame.lookAt(newCamPos, rootPart.Position)
 	end
 
 	isPerformingAction = false
 end
 
--- 🚀 Side Dash
 local function sideDash(direction, distance, duration)
     if isPerformingAction then return end
     isPerformingAction = true
@@ -146,7 +130,7 @@ local function sideDash(direction, distance, duration)
     local character, _ = getCharacter()
     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
     if rootPart then
-        local tween = TweenService:Create(rootPart, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = rootPart.CFrame * CFrame.new(direction * distance, 0, 0) })
+        loal tween = TweenService:Create(rootPart, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = rootPart.CFrame * CFrame.new(direction * distance, 0, 0) })
         tween:Play()
         tween.Completed:Wait()
         tween:Destroy()
@@ -155,7 +139,6 @@ local function sideDash(direction, distance, duration)
     isPerformingAction = false
 end
 
--- 🚀 Impulse Dash
 local function impulseDash(direction, distance, height, power, duration)
     if isPerformingAction then return end
     isPerformingAction = true
@@ -173,7 +156,6 @@ local function impulseDash(direction, distance, height, power, duration)
     isPerformingAction = false
 end
 
--- ✅ ฟังก์ชันหยุดทุกแอนิเมชัน
 local function Stopallanimation()
     local _, humanoid = getCharacter()
     if humanoid then
@@ -191,12 +173,10 @@ local function Stopallanimation()
     end
 end
 
--- ✅ ฟังก์ชันอัปเดต UI ปุ่ม
 local function updateUIButtons()
     toggleRotationButton.Text = "Rotation: " .. (rotationEnabled and "ON" or "OFF")
 end
 
--- ✅ ฟังก์ชันปุ่ม
 resetButton.MouseButton1Click:Connect(function()
     task.spawn(function()
         pcall(function()
@@ -227,14 +207,12 @@ toggleRotationButton.MouseButton1Click:Connect(function()
     updateUIButtons()
 end)
 
--- ✅ ฟังก์ชันตรวจจับคีย์ลัด  
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed or UserInputService:GetFocusedTextBox() then
         return
     end
 
     if input.KeyCode == keybinds.m1reset then
-        -- เรียกฟังก์ชัน M1 Reset
         task.spawn(function()
             pcall(function()
                 Stopallanimation()
@@ -247,7 +225,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             end)
         end)
     elseif input.KeyCode == keybinds.emotedash then
-        -- เรียกฟังก์ชัน Emote Dash
         task.spawn(function()
             pcall(function()
                 Stopallanimation()
@@ -257,11 +234,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             end)
         end)
     elseif input.KeyCode == keybinds.rotation then
-        -- เรียกฟังก์ชัน Rotation Toggle
         rotationEnabled = not rotationEnabled
         updateUIButtons()
     end
 end)
 
--- เรียกใช้ฟังก์ชันเริ่มต้น
 updateUIButtons()
