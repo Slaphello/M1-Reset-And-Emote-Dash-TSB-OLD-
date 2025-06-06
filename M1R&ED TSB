@@ -1,4 +1,4 @@
--- Open source (Disconnected)
+-- Open source(Old&Discontinued)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
@@ -30,22 +30,38 @@ local function createButton(name, posY)
     corner.CornerRadius = UDim.new(0, 8)
     corner.Parent = button
 
-    local clickTween = TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Size = UDim2.new(0, 135, 0, 45) })
-    local releaseTween = TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Size = UDim2.new(0, 130, 0, 40) })
+    local clickTween =
+        TweenService:Create(
+        button,
+        TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0, 135, 0, 45)}
+    )
+    local releaseTween =
+        TweenService:Create(
+        button,
+        TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0, 130, 0, 40)}
+    )
 
-    button.MouseEnter:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(255, 150, 0) }):Play()
-    end)
+    button.MouseEnter:Connect(
+        function()
+            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 150, 0)}):Play()
+        end
+    )
 
-    button.MouseLeave:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(100, 100, 100) }):Play()
-    end)
+    button.MouseLeave:Connect(
+        function()
+            TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(100, 100, 100)}):Play()
+        end
+    )
 
-    button.MouseButton1Click:Connect(function()
-        clickTween:Play()
-        clickTween.Completed:Wait()
-        releaseTween:Play()
-    end)
+    button.MouseButton1Click:Connect(
+        function()
+            clickTween:Play()
+            clickTween.Completed:Wait()
+            releaseTween:Play()
+        end
+    )
 
     return button
 end
@@ -74,7 +90,9 @@ end
 
 local function playAnimation(animationId)
     local _, humanoid = getCharacter()
-    if not humanoid then return end
+    if not humanoid then
+        return
+    end
 
     local animator = humanoid:FindFirstChildOfClass("Animator")
     if not animator then
@@ -98,39 +116,45 @@ local function playAnimation(animationId)
 end
 
 local function rotateCharacter(degrees)
-	if isPerformingAction or not rotationEnabled then return end
-	isPerformingAction = true
-
-	local character, _ = getCharacter()
-	local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-	if rootPart then
-		rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(degrees),
-
-		local camPos = camera.CFrame.Position
-		local camY = camPos.Y -- ความสูงเดิมของกล้อง
-		local distanceVec = camPos - rootPart.Position
-		local flatVec = Vector3.new(distanceVec.X, 0, distanceVec.Z)
-		local distance = flatVec.Magnitude
-
-		local rotatedVec = CFrame.fromAxisAngle(Vector3.yAxis, math.rad(degrees)) * flatVec
-
-		local newCamPos = rootPart.Position + rotatedVec
-		newCamPos = Vector3.new(newCamPos.X, camY, newCamPos.Z)
-
-		camera.CFrame = CFrame.lookAt(newCamPos, rootPart.Position)
-	end
-
-	isPerformingAction = false
-end
-
-local function sideDash(direction, distance, duration)
-    if isPerformingAction then return end
+    if isPerformingAction or not rotationEnabled then
+        return
+    end
     isPerformingAction = true
 
     local character, _ = getCharacter()
     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
     if rootPart then
-        loal tween = TweenService:Create(rootPart, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = rootPart.CFrame * CFrame.new(direction * distance, 0, 0) })
+        rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(degrees), 0)
+
+        local camPos = camera.CFrame.Position
+        local camY = camPos.Y
+        local distanceVec = camPos - rootPart.Position
+        local flatVec = Vector3.new(distanceVec.X, 0, distanceVec.Z)
+        local rotatedVec = CFrame.fromAxisAngle(Vector3.yAxis, math.rad(degrees)) * flatVec
+        local newCamPos = rootPart.Position + rotatedVec
+        camera.CFrame = CFrame.lookAt(Vector3.new(newCamPos.X, camY, newCamPos.Z), rootPart.Position)
+    end
+
+    isPerformingAction = false
+end
+
+local function sideDash(direction, distance, duration)
+    if isPerformingAction then
+        return
+    end
+    isPerformingAction = true
+
+    local character, _ = getCharacter()
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        local tween =
+            TweenService:Create(
+            rootPart,
+            TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {
+                CFrame = rootPart.CFrame * CFrame.new(direction * distance, 0, 0)
+            }
+        )
         tween:Play()
         tween.Completed:Wait()
         tween:Destroy()
@@ -140,17 +164,24 @@ local function sideDash(direction, distance, duration)
 end
 
 local function impulseDash(direction, distance, height, power, duration)
-    if isPerformingAction then return end
+    if isPerformingAction then
+        return
+    end
     isPerformingAction = true
 
     local character, _ = getCharacter()
     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
     if rootPart then
         local force = Instance.new("BodyVelocity")
-        force.Velocity = (rootPart.CFrame.RightVector * direction * distance + Vector3.new(0, height, 0)).unit * power
+        force.Velocity = (rootPart.CFrame.RightVector * direction * distance + Vector3.new(0, height, 0)).Unit * power
         force.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
         force.Parent = rootPart
-        task.delay(duration, function() force:Destroy() end)
+        task.delay(
+            duration,
+            function()
+                force:Destroy()
+            end
+        )
     end
 
     isPerformingAction = false
@@ -161,9 +192,12 @@ local function Stopallanimation()
     if humanoid then
         local animator = humanoid:FindFirstChildOfClass("Animator")
         if animator then
-            local success, tracks = pcall(function()
-                return animator:GetPlayingAnimationTracks()
-            end)
+            local success, tracks =
+                pcall(
+                function()
+                    return animator:GetPlayingAnimationTracks()
+                end
+            )
             if success and tracks then
                 for _, track in ipairs(tracks) do
                     track:Stop()
@@ -177,66 +211,99 @@ local function updateUIButtons()
     toggleRotationButton.Text = "Rotation: " .. (rotationEnabled and "ON" or "OFF")
 end
 
-resetButton.MouseButton1Click:Connect(function()
-    task.spawn(function()
-        pcall(function()
-            Stopallanimation()
-            playAnimation(10480793962)
-            sideDash(1, 25.5, 0.24)
-            rotateCharacter(65)
-            task.wait(0.004)
-            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
-            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
-        end)
-    end)
-end)
-
-emoteDashButton.MouseButton1Click:Connect(function()
-    task.spawn(function()
-        pcall(function()
-            Stopallanimation()
-            playAnimation(10480793962)
-            rotateCharacter(89)
-            impulseDash(1, 37, 7, 90, 0.29)
-        end)
-    end)
-end)
-
-toggleRotationButton.MouseButton1Click:Connect(function()
-    rotationEnabled = not rotationEnabled
-    updateUIButtons()
-end)
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed or UserInputService:GetFocusedTextBox() then
-        return
+resetButton.MouseButton1Click:Connect(
+    function()
+        task.spawn(
+            function()
+                pcall(
+                    function()
+                        Stopallanimation()
+                        playAnimation(10480793962)
+                        sideDash(1, 25.5, 0.24)
+                        rotateCharacter(65)
+                        task.wait(0.004)
+                        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
+                        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+                    end
+                )
+            end
+        )
     end
+)
 
-    if input.KeyCode == keybinds.m1reset then
-        task.spawn(function()
-            pcall(function()
-                Stopallanimation()
-                playAnimation(10480793962)
-                sideDash(1, 25.5, 0.24)
-                rotateCharacter(65)
-                task.wait(0.004)
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
-            end)
-        end)
-    elseif input.KeyCode == keybinds.emotedash then
-        task.spawn(function()
-            pcall(function()
-                Stopallanimation()
-                playAnimation(10480793962)
-                rotateCharacter(89)
-                impulseDash(1, 37, 7, 90, 0.29)
-            end)
-        end)
-    elseif input.KeyCode == keybinds.rotation then
+emoteDashButton.MouseButton1Click:Connect(
+    function()
+        task.spawn(
+            function()
+                pcall(
+                    function()
+                        Stopallanimation()
+                        playAnimation(10480793962)
+                        rotateCharacter(89)
+                        impulseDash(1, 37, 7, 90, 0.29)
+                    end
+                )
+            end
+        )
+    end
+)
+
+toggleRotationButton.MouseButton1Click:Connect(
+    function()
         rotationEnabled = not rotationEnabled
         updateUIButtons()
     end
-end)
+)
+
+-- getgenv().keybinds = {
+--  m1reset = Enum.KeyCode.R,
+--  emotedash = Enum.KeyCode.T,
+--  rotation = Enum.KeyCode.H
+-- }
+
+UserInputService.InputBegan:Connect(
+    function(input, gameProcessed)
+        if gameProcessed or UserInputService:GetFocusedTextBox() then
+            return
+        end
+
+        print("Key pressed:", input.KeyCode.Name)
+
+        local binds = getgenv().keybinds
+        if input.KeyCode == binds.m1reset then
+            task.spawn(
+                function()
+                    pcall(
+                        function()
+                            Stopallanimation()
+                            playAnimation(10480793962)
+                            sideDash(1, 25.5, 0.24)
+                            rotateCharacter(65)
+                            task.wait(0.004)
+                            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
+                            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+                        end
+                    )
+                end
+            )
+        elseif input.KeyCode == binds.emotedash then
+            task.spawn(
+                function()
+                    pcall(
+                        function()
+                            Stopallanimation()
+                            playAnimation(10480793962)
+                            rotateCharacter(89)
+                            impulseDash(1, 37, 7, 90, 0.29)
+                        end
+                    )
+                end
+            )
+        elseif input.KeyCode == binds.rotation then
+            rotationEnabled = not rotationEnabled
+            updateUIButtons()
+        end
+    end
+)
 
 updateUIButtons()
