@@ -1,4 +1,6 @@
 -- Open source(Old&Discontinued)
+-- If you want to rework or use it in your script or hub please give me a credit
+
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
