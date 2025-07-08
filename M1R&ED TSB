@@ -1,18 +1,48 @@
 -- Open source(Old&Discontinued)
 -- If you want to rework or use it in your script or hub please give me a credit
 
-if setclipboard then
-    setclipboard(
-        [[📌 Owners:
+-- เช็คว่ามีฟังก์ชัน setclipboard หรือไม่
+if not setclipboard then
+    warn("❌ setclipboard() is not available in this environment.")
+    return
+end
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+
+-- สร้าง ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CreditGui"
+screenGui.Parent = CoreGui
+screenGui.ResetOnSpawn = false
+
+-- สร้าง TextLabel
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(0, 350, 0, 80)
+textLabel.Position = UDim2.new(0.5, -175, 0.4, 0)
+textLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+textLabel.BackgroundTransparency = 0.3
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.Font = Enum.Font.GothamBold
+textLabel.TextSize = 22
+textLabel.Text = "Credit of owner on your clipboard now"
+textLabel.ZIndex = 999
+textLabel.Parent = screenGui
+
+setclipboard([[
+📌 Owners:
 🔗 Discord: https://discord.gg/RGQKDMkUQn
 
-📺 BTW, Script made by this guy (Discord):
-🔗 YouTube: https://www.youtube.com/@IDK_Hub]]
-    )
-    print("📋 Copied to clipboard!")
-else
-    warn("❌ setclipboard() is not available in this environment.")
-end
+📺 BTW, Script made by this guy (Owner):
+🔗 YouTube: https://www.youtube.com/@IDK_Hub
+]])
+
+print("📋 Copied to clipboard!")
+
+-- รอ 3 วินาที แล้วทำลาย GUI
+wait(3)
+screenGui:Destroy()
 
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
